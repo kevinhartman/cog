@@ -38,6 +38,9 @@ class PredictionRequest(PredictionBaseModel):
     # TODO: deprecate this
     output_file_prefix: t.Optional[str]
 
+    # { <output_name> -> { url=<url>, data=<data> }
+    output: t.Optional[t.Dict[str, t.Dict[str, t.Any]]]
+
     webhook: t.Optional[pydantic.AnyHttpUrl]
     webhook_events_filter: t.Optional[
         t.Set[WebhookEvent]

@@ -15,7 +15,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ValidationError
 
-from ..files import upload_file
+from ..files import upload_file, upload_output
 from ..json import upload_files
 from ..predictor import (
     BasePredictor,
@@ -101,10 +101,15 @@ def create_app(predictor_ref: str, threads: int = 1) -> FastAPI:
             _log_invalid_output(e)
             raise HTTPException(status_code=500)
 
+        def uploader(fh) -> str:
+            if not request.output:
+                return upload_file(fh, request.output_file_prefix)
+            return upload_output(fh, request.output)
+
         response_object = response.dict()
         response_object["output"] = upload_files(
             response_object["output"],
-            upload_file=lambda fh: upload_file(fh, request.output_file_prefix),  # type: ignore
+            upload_file=uploader,  # type: ignore
         )
 
         # TODO: clean up output files

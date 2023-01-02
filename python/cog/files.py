@@ -2,6 +2,7 @@ import base64
 import io
 import mimetypes
 import os
+import typing as t
 
 import requests
 
@@ -28,6 +29,21 @@ def upload_file(fh: io.IOBase, output_file_prefix: str = None) -> str:
         mime_type = "application/octet-stream"
     s = encoded_body.decode("utf-8")
     return f"data:{mime_type};base64,{s}"
+
+
+def upload_output(fh: io.IOBase, output: t.Dict[str, t.Dict[str, t.Any]]) -> str:
+    fh.seek(0)
+
+    name = getattr(fh, "name", "output")
+
+    # TODO: error if 'settings' not found
+    settings = output.get(name)
+    url = settings["url"]
+    data = settings["data"]
+
+    resp = requests.put(url, data=data, files={"file": fh})
+    resp.raise_for_status()
+    return url
 
 
 def guess_filename(obj: io.IOBase) -> str:
