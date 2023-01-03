@@ -37,9 +37,13 @@ def upload_output(fh: io.IOBase, output: t.Dict[str, t.Dict[str, t.Any]]) -> str
     name = getattr(fh, "name", "output")
 
     # TODO: error if 'settings' not found
-    settings = output.get(name)
+    settings = output[name]
     url = settings["url"]
     data = settings["data"]
+
+    print("File upload:")
+    print(url)
+    print(data)
 
     resp = requests.put(url, data=data, files={"file": fh})
     resp.raise_for_status()
