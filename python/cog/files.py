@@ -45,7 +45,7 @@ def upload_output(fh: io.IOBase, output: t.Dict[str, t.Dict[str, t.Any]]) -> str
     print(url)
     print(data)
 
-    resp = requests.put(url, data=data, files={"file": fh})
+    resp = requests.post(url, data=data, files={"file": fh})
     resp.raise_for_status()
     return url
 
